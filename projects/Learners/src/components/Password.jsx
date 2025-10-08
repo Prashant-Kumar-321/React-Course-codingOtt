@@ -3,8 +3,17 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { RiLockPasswordFill } from "react-icons/ri";
 
 
-const Password = ({name, label, value, onChange, onBlur=null, onInput=null}) => {
+const Password = ({name, label, value, onChange, onBlur=null, rating=false, passwordScore}) => {
+    // password with rating prop will only have the passwordStrongRating feature
+
     const [showPassword, setShowPassword] = useState(false);
+
+
+    function getPasswordRatingColor(passwordScore){
+        if(passwordScore <= 60) return 'text-red-500'
+        else if(passwordScore <= 80) return 'text-orange-400'
+        else return 'text-green-500'
+    }
 
     return (
         <div 
@@ -26,8 +35,7 @@ const Password = ({name, label, value, onChange, onBlur=null, onInput=null}) => 
                     value={value} 
                     onChange={onChange}
                     onBlur={onBlur}
-                    onInput={onInput}
-                    className="outline-none flex-grow text-xl"
+                    className={`${rating && getPasswordRatingColor(passwordScore)} outline-none flex-grow text-xl placeholder:text-black`}
                 />
 
                 <span

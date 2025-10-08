@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState} from "react";
 import { AiOutlineUser } from "react-icons/ai";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
@@ -8,13 +8,14 @@ import Field from "./Field";
 
 const SignUp = ()=>{
     const [passwordMatch, setPasswordMatch] = useState(true);
-
     const [signUpForm, setSignUpForm] = useState({
         username: '',
         email: '',
         password1: '', 
         password2: ''
     }); 
+
+    const [passwordStrongScore, setPasswordStrongScore] = useState(0)
 
 
 
@@ -53,49 +54,47 @@ const SignUp = ()=>{
 
 
         // Handle Password Match for password1 field
-        if(name==='password1' && nextForm.password2 !== ''){
-            if(nextForm.password1 != nextForm.password2){
-                setPasswordMatch(false);
-            }else{
-                setPasswordMatch(true);
+        if(name==='password1'){
+            checkPasswordStrong(nextForm.password1); 
+
+            if(nextForm.password2 !== ''){
+                if(nextForm.password1 != nextForm.password2){
+                    setPasswordMatch(false);
+                }else{
+                    setPasswordMatch(true);
+                }
             }
         }
+
+
+
     }
 
-    const checkPasswordStrong = (event) => {
-        const { inputType, data } = event.nativeEvent;
-        // For deletions, 'data' is usually null.
-        // You can get the current value from event.target.value.
-        // To detect what was deleted, you need to track the previous value.
+    const checkPasswordStrong = (password) => {
+        const criterias = {
+            lowercase: false, 
+            uppercase: false, 
+            number: false, 
+            specialChar: false, 
+            minLength8: password.length >= 8
+        };
 
-        // Store previous value in a ref
-        // if (!checkPasswordStrong.prevValue) checkPasswordStrong.prevValue = "";
+        // calculate number of criteria meet
+        for (const char of password) {
+            if (/[a-z]/.test(char)) criterias.lowercase = true;
+            if (/[A-Z]/.test(char)) criterias.uppercase = true;
+            if (/[0-9]/.test(char)) criterias.number = true;
+            if (/[^a-zA-Z0-9]/.test(char)) criterias.specialChar = true;
+        }
 
-        const prevValue = checkPasswordStrong.prevValue;
-        const currValue = event.target.value;
+        // Calculate score based on criterias met
+        // for every criteria meet increase rating by 20
+        let rating = 0; 
+        for (const yes of Object.values(criterias)){
+            if(yes) rating+=20;
+        }
 
-        console.log(`prev=${prevValue}, curr=${currValue}`);
-
-        // if (inputType && inputType.startsWith("delete")) {
-        //     // Find deleted text by comparing prevValue and currValue
-        //     let deleted = "";
-        //     if (prevValue.length > currValue.length) {
-        //         // Simple case: single character deleted
-        //         for (let i = 0; i < prevValue.length; i++) {
-        //             if (prevValue[i] !== currValue[i]) {
-        //                 deleted = prevValue[i];
-        //                 break;
-        //             }
-        //         }
-        //         // If nothing found, deleted is last character
-        //         if (!deleted) deleted = prevValue.slice(currValue.length);
-        //     }
-        //     console.log("Deleted text:", deleted);
-        // } else {
-        //     console.log("inputType:", inputType, "data:", data);
-        // }
-
-        // checkPasswordStrong.prevValue = currValue;
+       setPasswordStrongScore(rating);
     }
 
 
@@ -141,7 +140,8 @@ const SignUp = ()=>{
                             label="Password *" 
                             value={signUpForm.password1} 
                             onChange={handleFieldChange} 
-                            onInput={checkPasswordStrong}
+                            passwordScore={passwordStrongScore}
+                            rating={true}
                         />
 
 
