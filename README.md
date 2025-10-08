@@ -14,8 +14,8 @@
 7. Http Web Request
 8. Component Mapping
 9. Cleanup function
-10.Conditional element rendering
-11. 
+10. Conditional element rendering
+ 
 
 `Tutorial Video Link`
 [Tutorial Video](https://youtu.be/GRtoaR6Qig8?si=grS34ATW1KniiKrX)
